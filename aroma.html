@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title> the boy in the orange helmet </title>
+    <!-- <link rel="stylesheet" type="text/css" href="aroma.css"> -->
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.0/css/all.css">
+    
+
+	<style>
+		
+		* {
+			margin: 0;
+			padding: 0;
+			background-color: black;
+			overflow: hidden;
+			font-family: serif;
+		}
+
+		.eye {
+			width: 95vh;
+			height: 95vh;
+			background: none;
+
+			border-width: 3vh;
+			border-style: solid;
+			border-color: white;
+			border-radius: 75% 0;
+
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%) rotate(45deg) scale(3, 3);
+			-webkit-transform: translate(-50%, -50%) rotate(45deg) scale(3, 3);
+			-moz-transform: translate(-50%, -50%) rotate(45deg) scale(3, 3);
+
+			overflow: hidden;
+
+			cursor: default;
+			display: block;
+		}
+
+		.ball {
+			width: 60vh;
+			height: 60vh;
+			background: rgba(255, 255, 255, 0);
+			border-radius: 50%;
+			border: 4vh solid white;
+			overflow: hidden;
+
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%) rotate(-45deg) ;
+			-webkit-transform: translate(-50%, -50%) rotate(-45deg);
+			-moz-transform: translate(-50%, -50%) rotate(-45deg);
+			z-index: 100;
+
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		canvas {
+			position: relative;
+
+			background-color: black;
+			width: 60vh;
+			height: 60vh;
+			top: 0;
+			left: 0;
+
+			transform: scale(0.9, 0.9);
+			-webkit-transform: scale(0.9, 0.9);
+			-moz-transform: scale(0.9, 0.9);
+		}
+
+		.dan {
+			position: relative;
+
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+
+			overflow: hidden;
+		}
+
+		a {
+			position: absolute;
+			z-index: 100;
+
+			width: 4vh;
+			height: 4vh;
+
+			top: 20%;
+			left: 80%;
+
+			color: white;
+		}
+
+		a:link {
+			color: white;
+			text-decoration: none;
+		}
+		
+		a:visited {
+			color: white !important;
+			text-decoration: none !important;
+		}
+		
+		a:hover {
+			color: white !important;
+			text-decoration: none !important;
+		}
+		
+		a:active {
+			color: white;
+			text-decoration: none;
+		}
+
+		.close {
+			width: 4vh;
+			height:4vh;
+
+			top: 0;
+			right: 0;
+			text-align: center;
+
+			color: white;
+		}
+
+		i {
+			font-size: 2.5vh;
+			color: #fff;
+		}
+
+		.fas .fa-times {
+			color: white;
+			cursor: pointer;
+		}
+
+	
+
+
+
+		@media all and (max-width: 600px) {
+			body {
+				height: 100vh;
+				width: 100vh;
+				overflow: hidden;
+			}
+
+			.responsive-bg {
+				z-index: 10;
+				opacity: 1;
+			}
+		}
+
+
+		
+	</style>
+
+    <!-- <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script> -->
+    
+
+</head>
+
+
+<body>
+
+    <div class="eye">
+
+        <div class="ball">
+
+
+            <div class="dan">
+                <canvas></canvas>
+
+				<a href="page1.html">
+					<div class="close">
+					
+						<i class="fas fa-times"></i>
+					
+					</div>
+				</a>
+            
+			</div>
+
+			
+
+        </div>
+
+    </div>
+
+
+<script>
+
+
+
+const PI = Math.PI
+const randomInt = (min, max) => Math.floor( Math.random() * ( max - min ) + min)
+
+
+var canvas = document.querySelector( 'canvas')
+
+var _w, _h
+_w = canvas.width = innerWidth * 0.45
+_h = canvas.height = innerHeight
+
+function refreshSize() {
+    _w = canvas.width = innerWidth
+    _h = canvas.height = innerHeight
+    init()
+}
+
+window.addEventListener('resize', refreshSize )
+
+var c = canvas.getContext( '2d')
+canvas.style.background = 'linear-gradient( to bottom, #000, #000)'
+class Dandelion {
+    // d: diente, p: particulas
+    constructor( x, y, radius ) {
+        x = _w / 3.8;
+        y = _h / 2;
+        this.radius      = radius   | randomInt( 10, 15)
+
+        this.x = this.xx = x       
+        this.y = this.yy = y      
+
+        this.p_number    = this.radius * 7
+        this.seeds       = []
+
+        this.createSeeds()
+    }
+    createSeeds() {
+        for ( let i = 0; i < this.p_number; i++) {
+            this.seeds.push( new Particle( this.xx, this.yy, this.radius) )
+        }
+    }
+    draw() {
+        c.beginPath()
+            c.arc( this.xx , this.yy, this.radius, 0, PI * 2, true)
+            c.fillStyle = '#fff'
+            c.fill()
+
+            c.moveTo( this.xx, this.yy)
+            c.quadraticCurveTo( this.x + 10, _h, this.x, this.y * 2 - 10)
+            c.lineWidth = 5
+            c.strokeStyle = '#fff'
+            c.stroke()
+        c.closePath()   
+    }
+    update() {
+
+        this.draw()
+    }
+}
+
+class Particle {
+    constructor( x, y, size) {
+        this.xx     = x
+        this.yy     = y
+        // this.radius = randomInt( 3, 7)
+        this.radius = 3
+
+        this.amplitude  = size * 2.2 + randomInt(0, 10) * this.radius
+        this.radians    = Math.random() * 2 * PI
+
+        this.x          = this.xx + Math.sin( this.radians ) * this.amplitude 
+        this.y          = this.yy + Math.cos( this.radians ) * this.amplitude
+
+        this.wind       = {
+            isActive: false,
+            x: Math.random() * 4 + 2 , //horizontal speed
+            y: Math.random() * 2 - 1, //vertical speed
+            modulo: NaN
+        }
+        this.wind.modulo = Math.sqrt( Math.pow( this.wind.x, 2) + Math.pow( this.wind.y, 2) )
+        this.angularVelocity = this.radians < (PI*4)*3/8 ? 0.001 : -0.001
+        this.oscillator = Math.random() * 4 * PI
+        // console.log( this.radians )
+
+        this.opacity = 0.4
+    }
+
+    draw() {
+        c.beginPath()
+            // c.arc( this.x, this.y, this.radius, 0, PI * 2, true)
+            c.beginPath()
+			c.save()
+			c.globalAlpha = 1
+			let long = this.radius * 3;
+			let cutLong = long / 3;
+
+            for (let i = 0.5; i < 5; i++) {
+				c.moveTo(this.x, this.y);
+				c.quadraticCurveTo(
+					this.x + cutLong,
+					this.y + cutLong,
+					this.x + cutLong * i,
+					this.y - cutLong * 3
+				);
+				c.moveTo(this.x, this.y);
+				c.quadraticCurveTo(
+					this.x - cutLong,
+					this.y + cutLong,
+					this.x - cutLong * i,
+					this.y - cutLong * 3
+				);
+
+				c.lineWidth = 0.2
+    			c.stroke()
+    			c.restore()
+               
+			}
+
+            c.fillStyle     = `rgba(255,255,255, ${ this.opacity })`
+            c.fill()
+
+            c.moveTo( this.x,   this.y)
+            c.lineTo( this.xx,  this.yy)
+            c.lineWidth     = 0.7
+            c.strokeStyle   = `rgba(255,255,255, ${ this.opacity + 0.6})`
+            c.stroke()
+
+            
+
+
+
+        c.closePath()
+    }
+    pulldown() {
+        
+        this.radians += this.angularVelocity
+        this.radians += Math.cos(this.oscillator) * this.angularVelocity 
+        this.oscillator += 0.03
+    }
+    dynamic() {
+        this.pulldown()
+        this.xx += this.wind.x
+        this.yy += this.wind.y 
+
+        this.x = this.xx + Math.sin( this.radians ) * this.amplitude 
+        this.y = this.yy + Math.cos( this.radians ) * this.amplitude
+    }
+    update() {
+        
+        if ( this.wind.isActive ) this.dynamic()
+        this.draw()
+    }
+}
+
+
+    // setup
+
+
+
+var lions 
+function init() {
+    lions = []
+
+    for ( let i = 0; i < 1; i++) {
+        lions.push( new Dandelion(50) )
+    }  
+}
+init()
+
+window.addEventListener( 'click', () => {
+    lions.forEach( l => l.seeds.forEach( p => p.wind.isActive = Math.random() < 0.9 ? true : p.wind.isActive ) )
+}) 
+
+
+
+const backgroundGradient = c.createLinearGradient( 0, 0, 0, _h);
+backgroundGradient.addColorStop(0, '#000');
+backgroundGradient.addColorStop(1, '#000');
+
+
+function theBackground() {
+    
+    c.save()
+    c.fillStyle = backgroundGradient
+    c.fillRect( 0, 0, _w, _h)
+    // c.moveTo( 0, _h)
+    // c.lineTo( 0, _h - 80)
+    // c.lineTo( _w, _h - 60)
+    // c.lineTo( _w, _h)
+    // c.lineTo( 0, _h)
+    // c.fillStyle = '#000'
+    // c.fill()
+    // c.restore()
+
+  
+}
+
+function loop() {
+    requestAnimationFrame(loop)
+    theBackground()
+
+    lions.forEach( l => {
+        l.update()
+        l.seeds.forEach( (p, idx) => {
+            p.update()
+            if ( p.x > _w ) {
+                l.seeds.splice( idx, 1)
+            }
+        })
+        
+    })
+  
+    lions.forEach( l => l.seeds.forEach( p => p.wind.isActive = Math.random() < 0.0001 ? true : p.wind.isActive ) )
+
+}
+loop()
+
+
+	$(document).ready(function(){
+		history.scrollRestoration = "manual"; 
+
+			$(window).on('beforeunload', function(){ 
+			$(window).scrollTop(0); 
+			});
+	})
+
+</script>
+
+
+
+</body>
+
+
+</html>
